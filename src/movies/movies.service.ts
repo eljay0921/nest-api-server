@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMovieDto } from './dto/create-movie.dto';
+import { UpdateMovieDto } from './dto/update-movie.dto';
 import { Movie } from './entities/movie.entity';
 
 // 실제로 service.ts 에서는 db를 다루게 되겠지만, 이번 강의에서는 db처럼 유사하게만 사용할 예정
@@ -14,8 +15,8 @@ export class MoviesService {
     return this.movies;
   }
 
-  getOne(id: string): Movie {
-    const oneMovie = this.movies.find(movie => movie.id === +id);
+  getOne(id: number): Movie {
+    const oneMovie = this.movies.find(movie => movie.id === id);
     if (!oneMovie) {
       throw new NotFoundException(`Movie id ${id} is not found.`);
     }
@@ -32,16 +33,16 @@ export class MoviesService {
     return id;
   }
 
-  removeOne(id: string) {
+  removeOne(id: number) {
     this.getOne(id);
-    this.movies.filter(movie => movie.id !== +id);
+    this.movies = this.movies.filter(movie => movie.id !== id);
   }
 
-  updateOne(id: string, movieData: Movie) {
-    this.getOne(id);
+  updateOne(id: number, movieData: UpdateMovieDto) {
+    const movie = this.getOne(id);
 
     // 구리지만 db가 없고 dummy data를 사용하는 예제니까 일단 이렇게 하자...
     this.removeOne(id);
-    this.movies.push({ ...this.movies, ...movieData });
+    this.movies.push({ ...movie, ...movieData });
   }
 }
