@@ -45,28 +45,27 @@ describe('MoviesService', () => {
   });
 
   describe('Unit Test :: remove one movie', () => {
+    let movieId = 0;
+
     it('should be remove', () => {
-      const movieId = service.addOne({
+      movieId = service.addOne({
         title: 'test title',
         year: 2020,
         genres: ['action', 'sports', 'drama'],
       });
 
-      const beforeRemoveMovies = service.getAll();
-
+      const beforeRemoveLen = service.getAll().length;
       service.removeOne(movieId);
-      const afterRemoveMovies = service.getAll();
-
-      expect(false).toEqual(afterRemoveMovies.includes(beforeRemoveMovies));
+      const afterRemoveLen = service.getAll().length;
+      expect(afterRemoveLen).toBeLessThan(beforeRemoveLen);
     });
 
-    it('should be fail to remove', () => {
-      const nonExistId = 9999;
+    it('should throw 404 error', () => {
       try {
-        service.removeOne(nonExistId);
+        service.removeOne(movieId);
       } catch (error) {
         expect(error).toBeInstanceOf(NotFoundException);
-        expect(error.message).toEqual(`Movie id ${nonExistId} is not found.`);
+        expect(error.message).toEqual(`Movie id ${movieId} is not found.`);
       }
     });
   });
