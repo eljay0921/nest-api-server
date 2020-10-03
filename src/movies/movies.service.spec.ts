@@ -69,4 +69,28 @@ describe('MoviesService', () => {
       }
     });
   });
+
+  describe('Unit Test :: add one movie', () => {
+    it('shoul add a movie', () => {
+      const originMoviesLen = service.getAll().length;
+
+      const movieId = service.addOne({
+        title: 'test title',
+        year: 2020,
+        genres: ['action', 'sports', 'drama'],
+      });
+
+      expect(movieId).toEqual(1);
+      expect(movieId).toEqual(expect.any(Number));
+
+      const addedMoviesLen = service.getAll().length;
+
+      expect(addedMoviesLen).toBeGreaterThan(originMoviesLen);
+
+      const addedMovie = service.getOne(movieId);
+      expect(addedMovie.title).toEqual('test title');
+      expect(addedMovie.year).toEqual(2020);
+      expect(addedMovie.genres.length).toEqual(3);
+    });
+  });
 });
