@@ -43,4 +43,31 @@ describe('MoviesService', () => {
       }
     });
   });
+
+  describe('Unit Test :: remove one movie', () => {
+    it('should be remove', () => {
+      const movieId = service.addOne({
+        title: 'test title',
+        year: 2020,
+        genres: ['action', 'sports', 'drama'],
+      });
+
+      const beforeRemoveMovies = service.getAll();
+
+      service.removeOne(movieId);
+      const afterRemoveMovies = service.getAll();
+
+      expect(false).toEqual(afterRemoveMovies.includes(beforeRemoveMovies));
+    });
+
+    it('should be fail to remove', () => {
+      const nonExistId = 9999;
+      try {
+        service.removeOne(nonExistId);
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+        expect(error.message).toEqual(`Movie id ${nonExistId} is not found.`);
+      }
+    });
+  });
 });
