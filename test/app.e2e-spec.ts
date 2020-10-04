@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 
@@ -12,6 +12,13 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
     await app.init();
   });
 
@@ -42,6 +49,19 @@ describe('AppController (e2e)', () => {
         .end(() => done());
     });
 
+    it('FAIL - add one movie', done => {
+      request(app.getHttpServer())
+        .post('/movies')
+        .send({
+          title: 'test title',
+          year: 2020,
+          genres: ['action', 'drama', 'sports'],
+          what: 'the fxxx',
+        })
+        .expect(400)
+        .end(() => done());
+    });
+
     it('remove one movie', done => {
       request(app.getHttpServer())
         .delete('/movies/9999')
@@ -51,8 +71,35 @@ describe('AppController (e2e)', () => {
   });
 
   describe('/movies/:id', () => {
-    it.todo('GET');
-    it.todo('DELETE');
-    it.todo('PATCH');
+    it('get one movie', done => {
+      request(app.getHttpServer())
+        .get('/movies/1')
+        .expect(200)
+        .end(() => done());
+    });
+
+    it('get 404 error', done => {
+      request(app.getHttpServer())
+        .get('/movies/9999')
+        .expect(404)
+        .end(() => done());
+    });
+
+    it('update one movie', done => {
+      request(app.getHttpServer())
+        .patch('/movies/1')
+        .send({
+          title: 'test title2',
+        })
+        .expect(200)
+        .end(() => done());
+    });
+
+    it('remove one movie', done => {
+      request(app.getHttpServer())
+        .delete('/movies/1')
+        .expect(200)
+        .end(() => done());
+    });
   });
 });
